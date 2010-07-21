@@ -23,9 +23,11 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.RotarySelector;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.ColorStateList;
+import android.media.AudioManager;
 import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -70,6 +72,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private TextView mScreenLocked;
     private TextView mEmergencyCallText;
     private Button mEmergencyCallButton;
+    private ImageButton mPlayIcon;
+    private ImageButton mPauseIcon;
+    private ImageButton mRewindIcon;
+    private ImageButton mForwardIcon;
+    private AudioManager am = (AudioManager)getContext().getSystemService(Context.AUDIO_SERVICE);
+    private boolean mWasMusicActive = am.isMusicActive();
+    private boolean mIsMusicActive = false;
 
     // current configuration state of keyboard and display
     private int mKeyboardHidden;
@@ -208,6 +217,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mStatus1 = (TextView) findViewById(R.id.status1);
         mStatus2 = (TextView) findViewById(R.id.status2);
 
+        mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
+        mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause); 
+        mRewindIcon = (ImageButton) findViewById(R.id.musicControlPrevious); 
+        mForwardIcon = (ImageButton) findViewById(R.id.musicControlNext); 
+       
         mScreenLocked = (TextView) findViewById(R.id.screenLocked);
         mRotarySelector = (RotarySelector) findViewById(R.id.rotary_selector);
 
@@ -220,6 +234,61 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             public void onClick(View v) {
                 mCallback.takeEmergencyCallAction();
             }
+        });
+        mEmergencyCallButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.takeEmergencyCallAction();
+            }
+        });
+        
+        mPlayIcon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.pokeWakelock();
+                refreshMusicStatus();
+                if(!am.isMusicActive()) {
+                    mPauseIcon.setVisibility(View.VISIBLE);
+                    mPlayIcon.setVisibility(View.GONE);
+                    mRewindIcon.setVisibility(View.VISIBLE);
+                    mForwardIcon.setVisibility(View.VISIBLE);
+                    Intent intent;
+                    intent = new Intent("com.android.music.musicservicecommand.togglepause");
+                    getContext().sendBroadcast(intent);
+                }
+            }
+        });
+
+        mPauseIcon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.pokeWakelock();
+                refreshMusicStatus();
+                if(am.isMusicActive()) {
+                    mPlayIcon.setVisibility(View.VISIBLE);
+                    mPauseIcon.setVisibility(View.GONE);
+                    mRewindIcon.setVisibility(View.GONE);
+                    mForwardIcon.setVisibility(View.GONE);
+                    Intent intent;
+                    intent = new Intent("com.android.music.musicservicecommand.togglepause");
+                    getContext().sendBroadcast(intent);
+                }
+            }  
+        });
+
+        mRewindIcon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.pokeWakelock();
+                Intent intent;
+                intent = new Intent("com.android.music.musicservicecommand.previous");
+                getContext().sendBroadcast(intent);
+             }
+        });
+
+        mForwardIcon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.pokeWakelock();
+                Intent intent;
+                intent = new Intent("com.android.music.musicservicecommand.next");
+                getContext().sendBroadcast(intent);
+             }
         });
 
 
@@ -267,6 +336,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mShowingBatteryInfo = updateMonitor.shouldShowBatteryInfo();
         mPluggedIn = updateMonitor.isDevicePluggedIn();
         mBatteryLevel = updateMonitor.getBatteryLevel();
+        mIsMusicActive = am.isMusicActive();
 
         mStatus = getCurrentStatus(updateMonitor.getSimState());
         updateLayout(mStatus);
@@ -274,6 +344,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         refreshBatteryStringAndIcon();
         refreshAlarmDisplay();
 
+        refreshMusicStatus();
         mTimeFormat = DateFormat.getTimeFormat(getContext());
         mDateFormatString = getContext().getString(R.string.full_wday_month_day_no_year);
         refreshTimeAndDateDisplay();
@@ -450,6 +521,26 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             }
         } else {
             mCharging = getContext().getString(R.string.lockscreen_low_battery);
+        }
+    }
+    private void refreshMusicStatus() {
+        if (mWasMusicActive || mIsMusicActive) {
+            if(am.isMusicActive()) {
+                mPauseIcon.setVisibility(View.VISIBLE);
+                mPlayIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.VISIBLE);
+                mForwardIcon.setVisibility(View.VISIBLE);
+            } else {
+                mPlayIcon.setVisibility(View.VISIBLE);
+                mPauseIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.GONE);
+                mForwardIcon.setVisibility(View.GONE);
+            }
+        } else {
+            mPlayIcon.setVisibility(View.GONE);
+            mPauseIcon.setVisibility(View.GONE);
+            mRewindIcon.setVisibility(View.GONE);
+            mForwardIcon.setVisibility(View.GONE);
         }
     }
 
