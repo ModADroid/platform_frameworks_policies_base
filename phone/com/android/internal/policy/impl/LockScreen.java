@@ -250,9 +250,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     mPlayIcon.setVisibility(View.GONE);
                     mRewindIcon.setVisibility(View.VISIBLE);
                     mForwardIcon.setVisibility(View.VISIBLE);
-                    Intent intent;
-                    intent = new Intent("com.android.music.musicservicecommand.togglepause");
-                    getContext().sendBroadcast(intent);
+                    sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
                 }
             }
         });
@@ -266,9 +264,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     mPauseIcon.setVisibility(View.GONE);
                     mRewindIcon.setVisibility(View.GONE);
                     mForwardIcon.setVisibility(View.GONE);
-                    Intent intent;
-                    intent = new Intent("com.android.music.musicservicecommand.togglepause");
-                    getContext().sendBroadcast(intent);
+                    sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
                 }
             }  
         });
@@ -276,18 +272,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mRewindIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mCallback.pokeWakelock();
-                Intent intent;
-                intent = new Intent("com.android.music.musicservicecommand.previous");
-                getContext().sendBroadcast(intent);
+                sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
              }
         });
 
         mForwardIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mCallback.pokeWakelock();
-                Intent intent;
-                intent = new Intent("com.android.music.musicservicecommand.next");
-                getContext().sendBroadcast(intent);
+                sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
              }
         });
 
@@ -542,6 +534,20 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             mRewindIcon.setVisibility(View.GONE);
             mForwardIcon.setVisibility(View.GONE);
         }
+    }
+
+    private void sendMediaButtonEvent(int code) {
+        long eventtime = SystemClock.uptimeMillis();
+        
+        Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
+        KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, code, 0);
+        downIntent.putExtra(Intent.EXTRA_KEY_EVENT, downEvent);
+        getContext().sendOrderedBroadcast(downIntent, null);
+
+        Intent upIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
+        KeyEvent upEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_UP, code, 0);
+        upIntent.putExtra(Intent.EXTRA_KEY_EVENT, upEvent);
+        getContext().sendOrderedBroadcast(upIntent, null);
     }
 
     /** {@inheritDoc} */
