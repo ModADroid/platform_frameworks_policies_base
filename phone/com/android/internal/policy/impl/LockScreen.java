@@ -36,7 +36,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.media.AudioManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.provider.Settings;
