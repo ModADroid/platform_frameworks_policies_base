@@ -46,7 +46,7 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
 
     static private StatusBarManager sStatusBar;
 
-    private static final int NUM_BUTTONS = 8;
+    private static final int NUM_BUTTONS = 12;
     private static final int MAX_RECENT_TASKS = NUM_BUTTONS * 2;    // allow for some discards
 
     final TextView[] mIcons = new TextView[NUM_BUTTONS];
@@ -101,6 +101,10 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
         mIcons[5] = (TextView)findViewById(com.android.internal.R.id.button5);
         mIcons[6] = (TextView)findViewById(com.android.internal.R.id.button6);
         mIcons[7] = (TextView)findViewById(com.android.internal.R.id.button7);
+        mIcons[8] = (TextView)findViewById(com.android.internal.R.id.button8);
+        mIcons[9] = (TextView)findViewById(com.android.internal.R.id.button9);
+        mIcons[10] = (TextView)findViewById(com.android.internal.R.id.button10);
+        mIcons[11] = (TextView)findViewById(com.android.internal.R.id.button11);
         mNoAppsText = findViewById(com.android.internal.R.id.no_applications_message);
 
         for (TextView b: mIcons) {
