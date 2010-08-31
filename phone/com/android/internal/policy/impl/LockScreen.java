@@ -94,6 +94,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private String mDateFormatString;
     private java.text.DateFormat mTimeFormat;
     private boolean mEnableMenuKeyInLockScreen;
+    private boolean mMenuUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(),
+         Settings.System.MENU_UNLOCK_SCREEN, 0) == 1);
 
     private boolean mUseRotaryLockScreen = true;
 
@@ -331,8 +333,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) {
-            mCallback.goToUnlockScreen();
+        if ((keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) ||
+            (keyCode == KeyEvent.KEYCODE_MENU && mMenuUnlockScreen)) {
+               mCallback.goToUnlockScreen();
         }
         return false;
     }
