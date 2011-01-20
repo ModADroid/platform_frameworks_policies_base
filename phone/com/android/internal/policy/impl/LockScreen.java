@@ -95,7 +95,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private java.text.DateFormat mTimeFormat;
     private boolean mEnableMenuKeyInLockScreen;
 
-    private boolean mUseRotaryLockScreen = false;
+    private boolean mUseRotaryLockScreen = true;
 
     /**
      * The status of this lock screen.
