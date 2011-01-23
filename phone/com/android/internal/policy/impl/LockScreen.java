@@ -193,10 +193,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     + " res orient=" + context.getResources().getConfiguration().orientation);
         }
 
-	/*mUseRotaryLockScreen = (Settings.System.getInt(
+	mUseRotaryLockScreen = (Settings.System.getInt(
             context.getContentResolver(),
             Settings.System.USE_ROTARY_LOCKSCREEN, 0) == 1
-            );*/
+            );
 
         final LayoutInflater inflater = LayoutInflater.from(context);
         if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
